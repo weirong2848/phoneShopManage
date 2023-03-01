@@ -1,0 +1,46 @@
+server:
+  port: 9000
+
+spring:
+  application:
+    name: mainManage
+  thymeleaf:
+    prefix: classpath:/html/
+    suffix: .html
+    mode: HTML5
+    encoding: UTF-8
+  redis:
+    host: 192.168.41.128
+    port: 6379
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848 #配置Nacos地址
+    sentinel:
+      transport:
+        dashboard: localhost:8080 #配置Sentinel dashboard地址
+        port: 8719
+  datasource:
+    url: jdbc:mysql://localhost:3306/phoneshop?useUnicode=true&characterEncoding=UTF-8
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.jdbc.Driver
+  mvc:
+    static-path-pattern: /**
+
+feign:
+  sentinel:
+    enabled: true # 激活Sentinel对Feign的支持
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+service-url:
+  nacos-user-service: http://userManage,http://orderManage,http://commodityManage
+mybatis:
+  mapper-locations: classpath:/mapper/*.xml
+  type-aliases-package: com.entity
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

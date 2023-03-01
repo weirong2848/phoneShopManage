@@ -1,0 +1,132 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>登录</title>
+  <meta name="description" content="这是一个 index 页面">
+  <meta name="keywords" content="index">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <link rel="icon" type="image/png" href="../i/favicon.png">
+  <link rel="apple-touch-icon-precomposed" href="../i/app-icon72x72@2x.png">
+  <meta name="apple-mobile-web-app-title" content="Amaze UI" />
+  <link rel="stylesheet" href="../css/amazeui.min.css" />
+  <link rel="stylesheet" href="../css/admin.css">
+  <link rel="stylesheet" href="../css/app.css">
+</head>
+
+<body data-type="login">
+
+  <div class="am-g myapp-login">
+	<div class="myapp-login-logo-block  tpl-login-max">
+		<div class="myapp-login-logo-text">
+			<div class="myapp-login-logo-text">
+				Amaze UI<span> Login</span> <i class="am-icon-skyatlas"></i>
+				
+			</div>
+		</div>
+
+		<div class="login-font">
+			<i>Log In </i> or <span> Sign Up</span>
+		</div>
+		<div class="am-u-sm-10 login-am-center">
+			<form class="am-form" id="loginForm">
+				<fieldset>
+					<div class="am-form-group"><!--doc-ipt-email-1-->
+						<input type="text" class="" id="email" placeholder="请输入邮箱">
+					</div>
+					<div class="am-form-group"><!--doc-ipt-pwd-1-->
+						<input type="password" class="" id="password" placeholder="请输入密码">
+					</div>
+					<div class="am-form-group"><!--doc-ipt-pwd-1-->
+						<input type="txet" class="" id="verificationCode" placeholder="请输入验证码">
+						<button onclick="sendCode()" type="button">获取验证码</button>
+						<input type="hidden" id="sendVerificationKey" >
+					</div>
+
+					<p><button type="submit" class="am-btn am-btn-default" onclick="login()">登录</button></p>
+				</fieldset>
+			</form>
+		</div>
+	</div>
+</div>
+
+  <script src="../js/jquery.min.js"></script>
+  <script src="../js/amazeui.min.js"></script>
+  <script src="../js/app.js"></script>
+
+  <script type="text/javascript">
+	  function sendCode() {//发送验证码
+		  var email = document.getElementById("email").value;
+		  if (email != "") {
+			  $.ajax({
+				  type: "post",
+				  url: "../userManage/sendCode",
+				  cache: true,
+				  datatype: "json",
+				  async: false,
+				  data: {
+					  email: email
+				  },
+				  success: function (data) {
+				  	document.getElementById("sendVerificationKey").value=data;
+				  }
+			  });
+		  }else{
+			  alert("请输入邮箱");
+			  return false;
+		  }
+	  }
+
+	  function login() {//登入
+		  var email = document.getElementById("email").value;
+		  var password = document.getElementById("password").value;
+		  var verificationCode = document.getElementById("verificationCode").value;
+		  var sendVerificationKey = document.getElementById("sendVerificationKey").value;
+		  var reg = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/;
+		  if (email != "" && password != "" && verificationCode != "") {
+		  	if(sendVerificationKey != ""){
+				if (reg.test(email) == true) {
+					$.ajax({
+						type: "post",
+						url: "../userManage/login",
+						cache: true,
+						datatype: "json",
+						async : false,
+						data: {
+							email: email,
+							password: password,
+							verificationCode:verificationCode,
+							sendVerificationKey:sendVerificationKey
+						},
+						success: function(data){
+							if (data.code == "0000") {
+								document.getElementById("loginForm").action="../userManage/returnIndex";
+							} else {
+								alert(data.message);
+								return false;
+							}
+
+						},
+					});
+				}else{
+					alert("请输入正确的邮箱");
+					return false;
+				}
+			}else{
+		  		alert("请重新获取验证码");
+				return false
+			}
+		  } else {
+			  alert("邮箱、密码和验证码不能为空");
+			  return false;
+		  }
+	  }
+
+  </script>
+</body>
+
+</html>

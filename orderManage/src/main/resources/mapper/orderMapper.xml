@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.IOrderMapper">
+
+    <!--查询订单-->
+    <select id="selectOrder" resultType="com.entity.Order">
+        select orderid,
+        username,
+        time,
+        name,
+        phone,
+        address,
+        state,
+        totalnumber,
+        totalmoney,
+        isdel,
+        operator,
+        operateTime
+        from tb_order
+        where 1=1
+        <if test="orderId!=null and orderId.trim()!=''">
+            and orderid like concat('%',#{orderId},'%')
+        </if>
+        <if test="buyUser!=null and buyUser.trim()!=''">
+            and username like concat('%',#{buyUser},'%')
+        </if>
+        <if test="state!=null">
+            and state = #{state}
+        </if>
+        <if test="beginTime!=null and beginTime.trim()!='' and endTime!=null and endTime.trim()!=''">
+            and date_format(time,'%Y-%m-%d')
+            BETWEEN str_to_date( #{beginTime}, '%Y-%m-%d') AND str_to_date(#{endTime}, '%Y-%m-%d')
+        </if>
+        order by time desc
+    </select>
+
+    <select id="selectOrderByOrderId" resultType="com.entity.Order">
+        select orderid,
+        username,
+        time,
+        name,
+        phone,
+        address,
+        state,
+        totalnumber,
+        totalmoney,
+        isdel,
+        operator,
+        operateTime
+        from tb_order
+        where orderid = #{orderId}
+    </select>
+
+<!--    根据订单id查询订单详情-->
+    <select id="selectOrderInfo" resultType="com.entity.OrderInfo">
+        select orderid,
+        goodsID,
+        model,
+        color,
+        memoryCapacity,
+        number,
+        price,
+        picture
+        from tb_orderinfo
+        where orderid = #{orderId}
+    </select>
+
+    <!--查询总的销售情况 -->
+    <select id="selectAllSell" resultType="Map">
+        select SUBSTRING(time,1,10),
+        sum(totalmoney)
+        from tb_order
+        where state = 1
+        group by SUBSTRING(time,1,10)
+        order by SUBSTRING(time,1,10)
+    </select>
+
+    <!--查询各个分类的销售情况-->
+    <select id="selectSellByCategory" resultType="Map">
+        select  SUBSTRING(O.time,1,10),
+        I.number*I.price
+        from tb_orderinfo I,tb_order O
+        where I.orderid =O.orderid AND O.state = 1 and i.goodsID in(
+				select commodityId from tb_commodity where category = #{category})
+		group by SUBSTRING(O.time,1,10)
+        order by SUBSTRING(O.time,1,10)
+    </select>
+
+    <!--查询商品的售出情况-->
+    <select id="selectSellNumByCategory" resultType="Map">
+        select I.model,
+        sum(I.number) as num
+		from tb_orderinfo I,tb_order O
+        where I.orderid =O.orderid AND O.state = 1 and i.goodsID in(
+			select commodityId from tb_commodity where category = #{category})
+		GROUP BY I.goodsID
+    </select>
+
+
+</mapper>

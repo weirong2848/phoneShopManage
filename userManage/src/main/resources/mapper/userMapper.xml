@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.IUserMapper">
+    <select id="slectUser" resultType="com.entity.User">
+       select
+       username,
+       password,
+       gold,
+       isadmin,
+       email
+       from tb_user
+    </select>
+
+    <select id="selectUserByUsername" resultType="com.entity.User">
+       select
+       username,
+       password,
+       gold,
+       isadmin,
+       email
+       from tb_user
+       where 1=1 and
+       username = #{username}
+    </select>
+
+    <select id="selectUserByEmail" resultType="com.entity.User">
+       select
+       username,
+       password,
+       gold,
+       isadmin,
+       email
+       from tb_user
+       where 1=1 and
+       email = #{email}
+    </select>
+
+    <insert id="addUser">
+      insert into
+      tb_user
+      (username,
+      password,
+      gold,
+      isadmin,
+      email)
+      values(
+      #{username},
+      #{password},
+      #{gold},
+      #{isadmin},
+      #{email})
+    </insert>
+
+    <update id="updateUser">
+      update
+      tb_user
+      set
+      password=#{password}
+      where
+      username = #{username}
+    </update>
+
+</mapper>

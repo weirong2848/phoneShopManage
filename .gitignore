@@ -1,0 +1,6 @@
+# Project exclude paths
+/commodityManage/target/
+/gateway/target/
+/mainManage/target/
+/orderManage/target/
+/userManage/target/

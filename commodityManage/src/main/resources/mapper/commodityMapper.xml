@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.ICommodityMapper">
+
+    <!--查询商品-->
+    <select id="selectCommodity" resultType="com.entity.Commodity">
+        select id,
+        commodityId,
+        brand,
+        model,
+        picture,
+        commoditydetails,
+        category,
+        kind,
+        isDelete,
+        createUser,
+        createTime,
+        updateUser,
+        updateTime
+        from tb_commodity
+        where 1=1
+        <if test="commodityId!=null and commodityId.trim()!=''">
+            and commodityId = #{commodityId}
+        </if>
+        <if test="brand!=null and brand.trim()!=''">
+            and brand = #{brand}
+        </if>
+        <if test="model!=null and model.trim()!=''">
+            and model = #{model}
+        </if>
+        <if test="category!=null and category.trim()!=''">
+            and category = #{category}
+        </if>
+        <if test="kind!=null and kind.trim()!=''">
+            and kind = #{kind}
+        </if>
+        <if test="isDelete!=null and isDelete.trim()!=''">
+            and isDelete = #{isDelete}
+        </if>
+    </select>
+
+    <!--查询商品的可选信息-->
+    <select id="selectCommodityInfo" resultType="com.entity.CommodityInfo">
+        select id,
+        commodityId,
+        color,
+        memoryCapacity,
+        price,
+        reserve,
+        isDelete,
+        createUser,
+        createTime,
+        updateUser,
+        updateTime
+        from tb_commodityinfo
+        where commodityId=#{commodityId}
+        <if test="color!=null and color.trim()!=''">
+            and color = #{color}
+        </if>
+        <if test="memoryCapacity!=null and memoryCapacity.trim()!=''">
+            and memoryCapacity = #{memoryCapacity}
+        </if>
+        <if test="isDelete!=null and isDelete.trim()!=''">
+            and isDelete = #{isDelete}
+        </if>
+    </select>
+
+    <!--更新商品信息-->
+    <update id="updateCoommodity">
+        update tb_commodity
+        set model = #{model},
+        picture = #{picture},
+        commoditydetails = #{commoditydetails},
+        updateUser = #{updateUser},
+        updateTime = #{updateTime}
+        where 1=1 and
+        commodityId=#{commodityId}
+        and isDelete = 0;
+    </update>
+
+    <!--更新商品可选择信息-->
+    <update id="updateCommodityInfo">
+        update tb_commodityinfo
+        set color = #{color},
+        memoryCapacity = #{memoryCapacity},
+        price = #{price},
+        reserve = #{reserve},
+        updateUser = #{updateUser},
+        updateTime = #{updateTime}
+        where 1=1 and
+        isDelete = 0
+        and commodityId=#{commodityId}
+        <if test="color!=null and color.trim()!=''">
+            and color = #{color}
+        </if>
+        <if test="memoryCapacity!=null and memoryCapacity.trim()!=''">
+            and memoryCapacity = #{memoryCapacity}
+        </if>
+    </update>
+
+    <!--更新商品是否逻辑删除-->
+    <update id="noDeleteCommodity">
+        update tb_commodity
+        set isDelete = #{isDelete}
+        where commodityId=#{commodityId}
+    </update>
+
+    <!--更新商品可选择信息是否逻辑删除-->
+    <update id="noDeleteCommodityInfo">
+        update tb_commodityinfo
+        set isDelete = #{isDelete}
+        where id =
+        <foreach collection="id" index="index" item="list" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <!--物理删除商品信息-->
+    <delete id="deleteCommodity">
+        delete from tb_commodity where commodityId=#{commodityId}
+    </delete>
+
+    <!--物理删除商品可选择信息-->
+    <delete id="deleteCommodityInfo">
+        delete from tb_commodityinfo  where id =
+        <foreach collection="list" index="index" item="list" open="(" separator="," close=")">
+            #{list}
+        </foreach>
+    </delete>
+
+    <!--插入商品信息-->
+    <insert id="insertCommodity">
+       insert into tb_commodity(id,commodityId,brand,model,picture,commoditydetails,category,kind,isDelete,createUser,createTime)
+        values (#{id},#{commodityId},#{brand},#{model},#{picture},#{commoditydetails},#{category},#{kind},#{isDelete},#{createUser},#{createTime})
+    </insert>
+
+    <!--插入商品可选择信息-->
+    <insert id="insertCommodityInfo">
+        insert into tb_commodityinfo(id,commodityId,color,memoryCapacity,price,reserve,isDelete,createUser,createTime)
+        values (UUID(),#{commodityId},#{color},#{memoryCapacity},#{price},#{reserve},#{isDelete},#{createUser},#{createTime})
+    </insert>
+</mapper>

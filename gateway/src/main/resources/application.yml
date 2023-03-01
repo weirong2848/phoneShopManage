@@ -1,0 +1,21 @@
+server:
+  port: 88
+
+spring:
+  application:
+    name: gateway
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848 #配置Nacos地址
+    gateway:  #配置gateway信息
+      discovery:
+        locator:
+          enabled: true #开启动态路由
+      routes: #配置(路由)要拦截的微服务，可以配置多个路由，每个路由以- 开头
+          - id: phoneShopManage    #路由id，可以省略
+            uri: lb://mainManage # http://localhost:9000 #请求转发时URL显示为此路径
+            predicates:
+              - Path=/userManage/returnLogin  #配置(路由)需要拦截的路径
+#            filters:  #由 http://127.0.0.1:端口/yml/接口路径 -> 变为 http://127.0.0.1:端口/接口路径 -> 最终变成 http://MALL-USERCENTER/接口路径
+#              - StripPrefix=1
